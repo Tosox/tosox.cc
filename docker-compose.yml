@@ -1,0 +1,19 @@
+services:
+  api:
+    build: ./api
+    container_name: tosox-api
+    environment:
+      # Optional; blank works (60 req/hr). Set in .env to raise the GitHub rate limit.
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  web:
+    build: ./web
+    container_name: tosox-web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    restart: unless-stopped

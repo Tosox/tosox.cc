@@ -1,0 +1,480 @@
+/* Global styles ported from the design prototype (docs/prototype.html). */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /*
+   * Neutrals sampled from the GitHub avatar: chroma ~0.011 at hue ~275.
+   * The previous values ran 0.037–0.075 chroma — 3–7x over the ~0.02 threshold where a colour
+   * stops reading as neutral — which is why every surface looked blue rather than dark.
+   */
+  --bg:        oklch(13%   0.010 275);
+  --bg1:       oklch(17.5% 0.011 274);
+  --bg2:       oklch(21%   0.011 273);
+  --bg3:       oklch(25%   0.012 273);
+  --border:    oklch(28%   0.012 272);
+  --border2:   oklch(35%   0.013 272);
+  --tx:        oklch(94%   0.005 275);
+  --tx2:       oklch(72%   0.010 272);
+  --tx3:       oklch(54%   0.012 272);
+  /* Hue 222 is the measured hue of the circuit traces on the avatar's shoulder. */
+  --accent:    oklch(66% 0.16 222);
+  --accentGlow: oklch(66% 0.16 222 / 0.15);
+  /* Semantic, not part of the brand palette — reserved for the star metric. */
+  --star:      oklch(80% 0.145 86);
+  /* The only warm hue on the site, so the support link reads by temperature rather than by size. */
+  --kofi:      oklch(70% 0.170 25);
+  --radius:    10px;
+  --font:      'Space Grotesk', sans-serif;
+  --mono:      'JetBrains Mono', monospace;
+
+  /* Tuning knobs for the texture/motif layer — safe to adjust in isolation. */
+  --grain:       0.055;  /* grain overlay opacity */
+  --trace-alpha: 0.5;    /* hero tracery opacity */
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  color: var(--tx);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+
+  /*
+   * Vignette echoing the avatar's own falloff. The ground is L13, so the lightness delta of each
+   * stop is what makes the gradient read — the top glow reaches L33, the bottom lift L23.
+   */
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(125% 78% at 50% -10%, oklch(33% 0.024 258) 0%, transparent 66%),
+    radial-gradient(95% 55% at 50% 106%, oklch(23% 0.016 268) 0%, transparent 74%);
+  background-attachment: fixed;
+}
+
+/*
+ * Fine grain, matching the tooth of the avatar. This is a true overlay above everything — sitting
+ * it below `.content` meant the cards covered most of it and only the gutters looked textured.
+ * `pointer-events: none` keeps it click-through.
+ */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  pointer-events: none; opacity: var(--grain);
+  /*
+   * Desaturated so the grain reads as texture rather than coloured static. A single octave keeps
+   * it soft — stacking octaves piles on high-frequency detail that looks like TV snow on a large
+   * display. The 220px tile reduces visible repetition across a wide viewport.
+   */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+app-root { display: block; min-height: 100vh; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fadeUp { animation: fadeUp 0.5s ease both; }
+
+/* Nav */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  /*
+   * Transparent rather than a flat fill of --bg, so the page's vignette reads continuously through
+   * the bar instead of stopping at it. brightness() darkens whatever scrolls underneath enough to
+   * keep the tabs legible, while preserving the gradient behind them.
+   */
+  background: transparent;
+  backdrop-filter: blur(20px) brightness(0.72);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 60px;
+}
+.nav-logo {
+  font-weight: 700; font-size: 18px; letter-spacing: -0.5px;
+  /* gap: 0 — "tosox" and the ".cc" span are separate flex items and must read as one word. */
+  color: var(--tx); text-decoration: none; display: flex; align-items: center; gap: 0;
+  background: none; border: none; cursor: pointer; font-family: var(--font);
+}
+.nav-logo span { color: var(--accent); }
+.nav-tabs { display: flex; gap: 6px; }
+.nav-tab {
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+  color: var(--tx3); background: transparent; cursor: pointer;
+  border: 1px solid var(--border);
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+  font-family: var(--font); text-decoration: none;
+}
+.nav-tab:hover { color: var(--tx2); background: var(--bg2); border-color: var(--border2); }
+.nav-tab.active {
+  color: var(--accent); background: var(--accentGlow);
+  border-color: oklch(from var(--accent) l c h / 0.55);
+}
+
+/* Layout */
+/* position/z-index keep the content above the grain overlay. */
+.content {
+  position: relative; z-index: 1;
+  padding-top: 60px; max-width: 1100px; margin: 0 auto; padding-left: 32px; padding-right: 32px;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  padding: 80px 0 60px;
+  display: flex; gap: 48px; align-items: center;
+}
+
+/*
+ * Circuit tracery, lifted from the avatar's shoulder. Decorative only — aria-hidden in the
+ * template — and sits behind the hero text.
+ */
+.hero-trace {
+  position: absolute; top: 50%; z-index: -1;
+  /*
+   * `.content` is a centred 1100px column, so `right: 0` would stop the traces at the column edge
+   * rather than the screen edge. This negative offset spans the gutter so they run off the viewport,
+   * as if continuing past the page. Set `right: 0` instead to keep them inside the column.
+   */
+  right: calc((100% - 100vw) / 2);
+  /* Generous box so `meet` scales the 340x200 viewBox up rather than drawing it near actual size. */
+  width: min(760px, 62vw); height: 400px;
+  transform: translateY(-50%);
+  pointer-events: none; opacity: var(--trace-alpha);
+}
+/* non-scaling-stroke keeps the traces as 1px hairlines however far the viewBox is scaled up. */
+.hero-trace path {
+  stroke: var(--accent); stroke-width: 1; fill: none; opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+.hero-trace circle { fill: var(--accent); }
+.hero-trace .pulse { animation: nodePulse 3.4s ease-in-out infinite; }
+.hero-trace .pulse-slow { animation: nodePulse 3.4s ease-in-out 0.9s infinite; }
+
+@keyframes nodePulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-trace .pulse, .hero-trace .pulse-slow { animation: none; }
+}
+.hero-avatar {
+  width: 100px; height: 100px; border-radius: 50%;
+  border: 2px solid var(--border2);
+  box-shadow: 0 0 32px var(--accentGlow);
+  flex-shrink: 0;
+}
+.hero-text { flex: 1; }
+.hero-name { font-size: 42px; font-weight: 700; letter-spacing: -1.5px; line-height: 1; margin-bottom: 10px; }
+.hero-bio { font-size: 16px; color: var(--tx2); max-width: 560px; text-wrap: pretty; margin-bottom: 20px; }
+.hero-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  text-decoration: none; cursor: pointer; font-family: var(--font);
+  /* Declared on the base so both variants size identically. */
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: var(--accent); color: #fff;
+  /* A slightly lighter rim so the button reads as raised rather than a flat fill. */
+  border-color: oklch(from var(--accent) calc(l + 0.1) c h);
+}
+.btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.btn-ghost {
+  background: var(--bg2); color: var(--tx2); border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--tx); background: var(--bg3); }
+/* Tinted rather than filled: loud enough to find, not louder than the work itself. */
+.btn-kofi {
+  background: oklch(from var(--kofi) l c h / 0.10);
+  border-color: oklch(from var(--kofi) l c h / 0.40);
+  color: var(--kofi);
+}
+.btn-kofi:hover {
+  background: oklch(from var(--kofi) l c h / 0.18);
+  border-color: oklch(from var(--kofi) l c h / 0.65);
+  transform: translateY(-1px);
+}
+
+/* Publishing platforms: a quiet third tier under the action buttons. */
+.hero-presence {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 18px;
+}
+.hero-presence-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--tx3);
+}
+.hero-presence a {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; color: var(--tx2); text-decoration: none;
+  transition: color 0.15s ease;
+}
+.hero-presence a:hover, .hero-presence a:focus-visible { color: var(--tx); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-kofi:hover, .btn-primary:hover { transform: none; }
+}
+
+/* Section */
+.section { padding: 56px 0; }
+.section-header { margin-bottom: 32px; }
+.section-label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--accent); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+}
+.section-label::before {
+  content: ''; display: inline-block; width: 20px; height: 1px; background: var(--accent);
+}
+.section-title { font-size: 28px; font-weight: 700; letter-spacing: -0.8px; }
+.section-desc { color: var(--tx2); font-size: 15px; margin-top: 6px; }
+
+/* Cards grid */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
+  /* Equalises height across rows too — grid rows otherwise size independently. */
+  grid-auto-rows: 1fr;
+}
+
+.mod-card {
+  position: relative; overflow: hidden;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column;
+  gap: 12px; transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  text-decoration: none; color: inherit;
+  animation: fadeUp 0.4s ease both;
+}
+/* Short trace along the top edge; extends on hover. */
+.mod-card::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 38px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent); opacity: 0.45;
+  transition: width 0.25s ease, opacity 0.25s ease;
+}
+.mod-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 4px 24px oklch(from var(--accent) l c h / 0.1);
+  transform: translateY(-2px);
+}
+.mod-card:hover::after { width: 92px; opacity: 0.8; }
+
+/*
+ * Deliberately identical to fadeUp. The browser restarts an animation when its `animation-name`
+ * changes, so alternating between the two names replays the entry animation on tab switches even
+ * when Angular reuses the existing DOM nodes.
+ */
+@keyframes fadeUpAlt {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cards-grid.anim-alt .mod-card { animation-name: fadeUpAlt; }
+@media (prefers-reduced-motion: reduce) {
+  .mod-card, .mod-card::after { transition: none; }
+}
+.mod-card-name { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+/*
+ * Fixed three-line box so every card is the same height regardless of description length.
+ * Three lines fits the longest current description (126 chars) without truncating; anything
+ * longer is clamped with an ellipsis rather than pushing the card taller than its neighbours.
+ */
+.mod-card-desc {
+  font-size: 13px; color: var(--tx2); line-height: 1.5; text-wrap: pretty;
+  min-height: 4.5em;
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+}
+/* Card meta row — everything here is live GitHub data, visually distinct from the editorial title. */
+.card-meta {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  font-size: 12px; font-family: var(--mono); color: var(--tx3);
+  margin-top: auto; padding-top: 4px;
+}
+.meta-lang { display: inline-flex; align-items: center; gap: 6px; }
+.meta-lang .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.meta-stats { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+/* Chips rather than bare text — these are the one "this got traction" signal on the card. */
+.meta-stat {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 6px; line-height: 1;
+  background: var(--bg2); border: 1px solid var(--border);
+  color: var(--tx2); font-size: 12px;
+}
+.meta-stat app-icon { display: inline-flex; }
+.meta-stat b { color: var(--tx); font-weight: 500; font-variant-numeric: tabular-nums; }
+/* Stars carry a warm semantic yellow, deliberately separate from the brand accent; forks stay muted. */
+.meta-stat.stars { border-color: oklch(from var(--star) l c h / 0.35); }
+.meta-stat.stars app-icon { color: var(--star); }
+.meta-archived {
+  font-size: 11px; padding: 2px 7px; border-radius: 4px;
+  border: 1px solid var(--border2); color: var(--tx3); letter-spacing: 0.3px;
+}
+.state-text-muted { color: var(--tx3); font-size: 13px; padding: 24px 0; }
+
+/* Contributions */
+.contrib-list { display: flex; flex-direction: column; gap: 10px; }
+.contrib-item {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 18px; text-decoration: none; color: inherit;
+  transition: border-color 0.2s, background 0.2s; animation: fadeUp 0.4s ease both;
+}
+.contrib-item:hover { border-color: var(--border2); background: var(--bg2); }
+.contrib-state {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.state-merged { background: oklch(62% 0.20 290); box-shadow: 0 0 6px oklch(62% 0.20 290 / 0.5); }
+.state-open { background: oklch(62% 0.20 168); box-shadow: 0 0 6px oklch(62% 0.20 168 / 0.5); }
+.state-closed { background: oklch(55% 0.15 15); box-shadow: 0 0 6px oklch(55% 0.15 15 / 0.5); }
+.contrib-main { flex: 1; min-width: 0; }
+.contrib-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.contrib-sub { font-size: 12px; color: var(--tx3); font-family: var(--mono); margin-top: 2px; }
+.contrib-meta { font-size: 11px; color: var(--tx3); font-family: var(--mono); text-align: right; flex-shrink: 0; }
+.contrib-meta .state-text-merged { color: oklch(62% 0.20 290); }
+.contrib-meta .state-text-open { color: oklch(62% 0.20 168); }
+.contrib-meta .state-text-closed { color: oklch(55% 0.15 15); }
+
+/* Skills — two proficiency tiers, the first weighted, the second deliberately quiet. */
+.skill-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; }
+.skill-tier {
+  background: var(--bg1); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 22px 24px; animation: fadeUp 0.4s ease both;
+  display: flex; flex-direction: column; gap: 20px;
+}
+/* The weighted tier: a hairline accent rail and brighter pills carry the distinction. */
+.skill-tier.core { border-color: var(--border2); box-shadow: inset 2px 0 0 var(--accent); }
+.skill-tier-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.skill-tier-name { font-size: 15px; font-weight: 600; color: var(--tx); letter-spacing: -0.2px; }
+.skill-tier-note { font-family: var(--mono); font-size: 11px; color: var(--tx3); }
+.skill-row-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--tx3); margin-bottom: 10px;
+}
+.skill-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-pill {
+  font-size: 12px; font-family: var(--mono); padding: 4px 10px;
+  border-radius: 5px; background: var(--bg2); border: 1px solid var(--border); color: var(--tx2);
+}
+.skill-tier.core .skill-pill { color: var(--tx); border-color: var(--border2); background: var(--bg3); }
+
+/* Language bar */
+.lang-block { margin-top: 36px; }
+/* Wide enough for the caption to sit on one line; balance keeps the two lines even if it ever wraps. */
+.lang-note { font-size: 13px; color: var(--tx3); margin: 8px 0 16px; max-width: 84ch; text-wrap: balance; }
+.lang-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px; }
+.lang-bar > div { min-width: 4px; border-radius: 2px; }
+.lang-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; }
+.lang-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--tx3); font-family: var(--mono); }
+.lang-legend-item .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.lang-legend-item .pct { color: var(--tx2); }
+
+/* About */
+.about-grid { display: flex; flex-direction: column; gap: 20px; }
+.about-card {
+  background: var(--bg1); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 24px 28px; animation: fadeUp 0.4s ease both;
+}
+.about-intro { font-size: 16px; color: var(--tx2); line-height: 1.75; text-wrap: pretty; max-width: 68ch; }
+.about-intro + .about-intro { margin-top: 1em; }
+.about-card-label { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+
+.focus-list { display: flex; flex-direction: column; }
+.focus-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  padding: 14px 12px; margin: 0 -12px; border-radius: 8px;
+  border-bottom: 1px solid var(--border);
+  color: inherit; text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.focus-item:last-child { border-bottom: none; }
+.focus-item:hover, .focus-item:focus-visible { background: var(--bg2); border-bottom-color: transparent; }
+.focus-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.focus-item .label { font-size: 14px; font-weight: 600; color: var(--tx); }
+.focus-item .sub { font-size: 12px; color: var(--tx3); font-family: var(--mono); text-wrap: pretty; }
+/* Count doubles as the affordance: it shifts left as the arrow slides in on hover. */
+.focus-count {
+  flex-shrink: 0; position: relative; padding-right: 0;
+  font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums;
+  color: var(--tx2); transition: padding-right 0.18s ease, color 0.18s ease;
+}
+.focus-count::after {
+  content: '→'; position: absolute; right: 0; opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.focus-item:hover .focus-count, .focus-item:focus-visible .focus-count {
+  color: var(--accent); padding-right: 18px;
+}
+.focus-item:hover .focus-count::after, .focus-item:focus-visible .focus-count::after { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .focus-item, .focus-count, .focus-count::after { transition: none; }
+}
+
+/* Loading / empty */
+.loader { display: flex; align-items: center; justify-content: center; padding: 60px 0; }
+.spinner {
+  width: 28px; height: 28px; border: 2px solid var(--border);
+  border-top-color: var(--accent); border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.empty { color: var(--tx3); font-size: 14px; padding: 40px 0; text-align: center; font-family: var(--mono); }
+.empty a { color: var(--accent); text-decoration: none; }
+
+/* Category tabs */
+.cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.cat-tab {
+  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); color: var(--tx3); background: transparent;
+  cursor: pointer; font-family: var(--font); transition: all 0.2s;
+}
+.cat-tab:hover { color: var(--tx2); border-color: var(--border2); }
+.cat-tab.active { background: var(--accentGlow); border-color: oklch(from var(--accent) l c h / 0.5); color: var(--accent); }
+
+/* Divider — hairline with a lit segment and a node, echoing the circuit motif. */
+.divider { position: relative; height: 1px; background: var(--border); margin: 0; }
+.divider::before {
+  content: ''; position: absolute; left: 0; top: 0; width: 64px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.divider::after {
+  content: ''; position: absolute; left: 62px; top: -2px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 7px var(--accentGlow);
+}
+
+/* Stat badges in hero */
+.stat-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 12px;
+  font-size: 12px; color: var(--tx2); font-family: var(--mono);
+}
+.stat-num { color: var(--tx); font-weight: 600; }
+
+/* Footer */
+footer { padding: 20px 0; display: flex; justify-content: center; align-items: center; }
+footer span { font-family: var(--mono); font-size: 12px; color: var(--tx3); }
+
+@media (max-width: 700px) {
+  nav { padding: 0 16px; }
+  .nav-tabs { display: none; }
+  .content { padding-left: 16px; padding-right: 16px; }
+  .hero { flex-direction: column; gap: 20px; padding: 40px 0 32px; }
+  /* The tracery would sit under the stacked text on narrow screens. */
+  .hero-trace { display: none; }
+  .hero-name { font-size: 32px; }
+  .about-grid { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: 1fr; }
+}

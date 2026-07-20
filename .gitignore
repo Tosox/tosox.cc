@@ -1,0 +1,22 @@
+# --- Secrets / env ---
+.env
+
+# --- Node / Angular (web/) ---
+node_modules/
+dist/
+.angular/
+*.log
+npm-debug.log*
+
+# --- Gradle / Kotlin (api/) ---
+.gradle/
+build/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
