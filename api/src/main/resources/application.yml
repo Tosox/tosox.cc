@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: api
+
+server:
+  port: 8080
+
+github:
+  username: Tosox
+  # Optional token. Blank -> 60 req/hr, set -> 5000 req/hr. Injected from the GITHUB_TOKEN env var.
+  token: ${GITHUB_TOKEN:}
+  excluded-users:
+    - Tosox
+    - CoHModSDK
+    - rpc4games
+  refresh-interval-ms: 1800000   # 30 minutes
+  search-limit: 40
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
