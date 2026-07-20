@@ -1,6 +1,11 @@
+# Pulls prebuilt images from GHCR. Building on the Pi took long enough that Portainer timed out
+# mid-deploy; CI builds them on a native arm64 runner instead and this just pulls.
+#
+# To build locally instead of pulling:
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 services:
   api:
-    build: ./api
+    image: ghcr.io/tosox/tosox.cc-api:${TAG:-latest}
     container_name: tosox-api
     environment:
       # Optional; blank works (60 req/hr). Set in .env to raise the GitHub rate limit.
@@ -10,7 +15,7 @@ services:
     restart: unless-stopped
 
   web:
-    build: ./web
+    image: ghcr.io/tosox/tosox.cc-web:${TAG:-latest}
     container_name: tosox-web
     ports:
       - "80:80"

@@ -1,0 +1,22 @@
+# Rebuilds the api image only when something that goes into it changes. Editing the README or
+# anything under web/ does not trigger a build.
+name: api image
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'api/**'
+      - '.github/workflows/api-image.yaml'
+      - '.github/workflows/docker-image.yaml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/docker-image.yaml
+    permissions:
+      contents: read
+      packages: write
+    with:
+      context: ./api
+      suffix: api
