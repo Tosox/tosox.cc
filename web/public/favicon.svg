@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="tosox.cc">
+  <rect width="64" height="64" rx="14" fill="#06070B"/>
+  <g fill="none" stroke="#EAEBEF" stroke-width="9" stroke-linecap="round">
+    <path d="M31.5 14 V37 A9 9 0 0 0 40.5 46"/>
+    <path d="M22.5 24 H39.5"/>
+  </g>
+  <circle cx="52" cy="45.5" r="4" fill="#00A5D7"/>
+</svg>
