@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { GithubService } from '../../core/github.service';
 
 const VIEW_ALL_URL =
-  'https://github.com/pulls/search?q=is%253Apr+author%253ATosox+-user%253ATosox+-user%253ACoHModSDK+-user%253Arpc4games';
+  'https://github.com/pulls/search?q=is%3Apr+author%3ATosox+-user%3ATosox+-user%3ACoHModSDK+-user%3Arpc4games';
 
 @Component({
   selector: 'app-contributions',
