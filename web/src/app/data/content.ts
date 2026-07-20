@@ -68,8 +68,8 @@ export interface FocusArea {
 export const FOCUS_AREAS: FocusArea[] = [
   {
     label: 'Game mods',
-    sub: 'Lua, C# and Python for S.T.A.L.K.E.R. Anomaly, SPT and World of Tanks',
-    groups: ['S.T.A.L.K.E.R. Mods', 'SPT Mods', 'WoT Mods'],
+    sub: 'Lua, C# and Python for S.T.A.L.K.E.R., Single Player Tarkov and World of Tanks',
+    groups: ['S.T.A.L.K.E.R. Mods', 'Single Player Tarkov Mods', 'World of Tanks Mods'],
   },
   {
     label: 'Reverse engineering',
