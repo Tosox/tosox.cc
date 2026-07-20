@@ -26,14 +26,25 @@ Browser ──▶ nginx (web) ──/api──▶ Spring Boot (api) ──(every
 
 ## Run with Docker (Raspberry Pi)
 
-Images are multi-arch, so they build natively on the Pi's arm64.
+Images are built for `linux/arm64` by GitHub Actions on every push to `master` that touches
+`api/` or `web/`, and published to GHCR. The Pi pulls them rather than building, which takes
+seconds instead of the ~30 minutes a Gradle plus Angular build needs on a Pi.
 
 ```bash
 # optional: raise the GitHub rate limit from 60 to 5000 req/hr
 cp .env.example .env      # then paste a token into GITHUB_TOKEN (a token with no scopes is enough)
 
-docker compose up -d --build
+docker compose pull && docker compose up -d
 ```
+
+To build from source instead of pulling:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+```
+
+Images are tagged `latest` (current `master`) and `sha-<commit>`. Pin a specific one with
+`TAG=sha-abc1234 docker compose up -d`.
 
 The site is then served on **port 80**:
 
