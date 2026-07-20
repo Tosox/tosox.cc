@@ -14,7 +14,7 @@ export type IconName =
   | 'email'
   | 'merge';
 
-/** Inline SVG icon set, ported from the design prototype. Colour follows `currentColor`. */
+/** Inline SVG icon set. Colour follows `currentColor`, size is set per usage. */
 @Component({
   selector: 'app-icon',
   template: `
