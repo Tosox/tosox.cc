@@ -71,8 +71,3 @@ Backend settings live in [`api/src/main/resources/application.yml`](api/src/main
 | `github.token` | `${GITHUB_TOKEN:}` | Optional PAT; blank = 60 req/hr, set = 5000 req/hr |
 | `github.excluded-users` | `Tosox, CoHModSDK` | Excluded from the external-contributions search |
 | `github.refresh-interval-ms` | `1800000` | Cache refresh interval (30 min) |
-
-## Design reference
-
-The original single-file React prototype is kept at [`docs/prototype.html`](docs/prototype.html) as the
-visual reference for the Angular rebuild.
