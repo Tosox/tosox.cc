@@ -27,16 +27,16 @@ export const CATALOG: CatalogGroup[] = [
   {
     label: 'S.T.A.L.K.E.R. Mods',
     repos: [
-      { repo: 'Tosox-Mini-Mods-Repo', title: 'Mini Mods Repo' },
+      { repo: 'Tosox-Mini-Mods-Repo', title: 'Tosox\' Mini Mods Repo' },
       { repo: 'Autocomplete-Tasks', title: 'Autocomplete Tasks' },
       { repo: 'Enjoy-Cigarettes', title: 'Enjoy Cigarettes' },
       { repo: 'Activated-Charcoal', title: 'Activated Charcoal' },
       { repo: 'Gotta-Go-Fast-Extended', title: 'Gotta Go Fast Extended' },
-      { repo: 'rpc4stalker', title: 'RPC4STALKER' },
+      { repo: 'rpc4stalker', title: 'rpc4stalker' },
     ],
   },
   {
-    label: 'SPT Mods',
+    label: 'Single Player Tarkov Mods',
     repos: [
       { repo: 'SPT-DynamicItemWeights', title: 'Dynamic Item Weights' },
       { repo: 'SPT-FIRFencePurchases', title: 'FIR Fence Purchases' },
@@ -46,10 +46,10 @@ export const CATALOG: CatalogGroup[] = [
     ],
   },
   {
-    label: 'WoT Mods',
+    label: 'World of Tanks Mods',
     repos: [
-      { repo: 'wot-appear-offline', title: 'WoT Appear Offline' },
-      { repo: 'wot-no-post-battle-spin', title: 'WoT No Post-Battle Spin' },
+      { repo: 'wot-appear-offline', title: 'Appear Offline' },
+      { repo: 'wot-no-post-battle-spin', title: 'No Post-Battle Spin' },
     ],
   },
   {
@@ -57,7 +57,7 @@ export const CATALOG: CatalogGroup[] = [
     repos: [
       { repo: 'ChatGPT-PromptStudio', title: 'ChatGPT PromptStudio' },
       { repo: 'ZEIT-Akademie-Quiz-Solver', title: 'ZEIT Akademie Quiz Solver' },
-      { repo: 'goons-tracker-local-times', title: 'Goons Tracker Local Times' },
+      { repo: 'goons-tracker-local-times', title: 'Goons Tracker — Local Times' },
     ],
   },
   {
