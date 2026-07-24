@@ -7,6 +7,10 @@ server:
 
 github:
   username: Tosox
+  organizations:
+    - rpc4games
+    - CoHModSDK
+    - CodeSparkApp
   # Optional token. Blank -> 60 req/hr, set -> 5000 req/hr. Injected from the GITHUB_TOKEN env var.
   token: ${GITHUB_TOKEN:}
   excluded-users:

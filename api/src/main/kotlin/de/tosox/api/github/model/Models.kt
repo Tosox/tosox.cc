@@ -10,6 +10,11 @@ data class Snapshot(
 	val profile: Profile,
 	/** Keyed by repository name (e.g. "Autocomplete-Tasks"). */
 	val repos: Map<String, Repo>,
+	/**
+	 * Repositories of the configured organizations, keyed by org login and then by repository name.
+	 * Kept separate from [repos] so an org repo and a user repo of the same name never collide.
+	 */
+	val orgs: Map<String, Map<String, Repo>>,
 	val contributions: List<Contribution>,
 	/** ISO-8601 timestamp of when this snapshot was built. */
 	val generatedAt: String,

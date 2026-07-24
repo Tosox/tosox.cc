@@ -61,6 +61,31 @@ class GithubClient(private val props: GithubProperties) {
 		return all
 	}
 
+	/** GET /orgs/{org}/repos — paginated, all repositories owned by the organization. */
+	fun fetchOrgRepos(org: String): List<GhRepo> {
+		val all = mutableListOf<GhRepo>()
+		var page = 1
+		while (page <= MAX_REPO_PAGES) {
+			val batch = client.get()
+				.uri { b ->
+					b.path("/orgs/{org}/repos")
+						.queryParam("per_page", PER_PAGE)
+						.queryParam("sort", "updated")
+						.queryParam("page", page)
+						.build(org)
+				}
+				.retrieve()
+				.body<Array<GhRepo>>()
+				?.toList()
+				.orEmpty()
+
+			all += batch
+			if (batch.size < PER_PAGE) break
+			page++
+		}
+		return all
+	}
+
 	/** GET /search/issues — PRs authored by the user in repositories they don't own. */
 	fun fetchContributions(): List<GhIssue> {
 		val excludes = props.excludedUsers.joinToString(" ") { "-user:$it" }

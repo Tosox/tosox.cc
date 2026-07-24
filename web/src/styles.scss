@@ -33,13 +33,14 @@
   --trace-alpha: 0.5;    /* hero tracery opacity */
 }
 
-html { scroll-behavior: smooth; }
+html { height: 100%; }
 
 body {
   font-family: var(--font);
   color: var(--tx);
-  min-height: 100vh;
-  overflow-x: hidden;
+  /* The window itself never scrolls — .scroll-area does — so the body is locked to the viewport. */
+  height: 100%;
+  overflow: hidden;
   line-height: 1.6;
 
   /*
@@ -74,7 +75,10 @@ body::after {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 
-app-root { display: block; min-height: 100vh; }
+/* The shell is a viewport-tall flex column: a fixed-height nav, then the scroll pane fills the rest.
+   Keeping the scroller in normal flow (rather than position:fixed) keeps it on the compositor's
+   fast-scroll path, so scrolling stays smooth. */
+app-root { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(18px); }
@@ -88,7 +92,7 @@ app-root { display: block; min-height: 100vh; }
 
 /* Nav */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  flex-shrink: 0;
   /*
    * Transparent rather than a flat fill of --bg, so the page's vignette reads continuously through
    * the bar instead of stopping at it. brightness() darkens whatever scrolls underneath enough to
@@ -122,10 +126,21 @@ nav {
 }
 
 /* Layout */
+/*
+ * The scroll pane: it fills the space under the nav, so the page scrolls here rather than on the
+ * window — and its scrollbar runs from beneath the nav downward instead of cutting across the bar.
+ * `min-height: 0` lets a flex child actually shrink and scroll. The gutter is reserved so growing
+ * content (e.g. expanding CoHModSDK) never makes the scrollbar pop in and reflow the column sideways.
+ */
+.scroll-area {
+  flex: 1; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
 /* position/z-index keep the content above the grain overlay. */
 .content {
   position: relative; z-index: 1;
-  padding-top: 60px; max-width: 1100px; margin: 0 auto; padding-left: 32px; padding-right: 32px;
+  max-width: 1100px; margin: 0 auto; padding-left: 32px; padding-right: 32px;
 }
 
 /* Hero */
@@ -322,6 +337,88 @@ nav {
   border: 1px solid var(--border2); color: var(--tx3); letter-spacing: 0.3px;
 }
 .state-text-muted { color: var(--tx3); font-size: 13px; padding: 24px 0; }
+
+/* Featured projects — collapsible, org-level showcase blocks on the Projects page. */
+.projects-showcase { display: flex; flex-direction: column; gap: 14px; }
+.project-block {
+  position: relative; overflow: hidden;
+  background: var(--bg1); border: 1px solid var(--border); border-radius: var(--radius);
+  /* A lit left rail, echoing the weighted skill tier, marks these as the flagship projects. */
+  box-shadow: inset 2px 0 0 var(--accent);
+  animation: fadeUp 0.4s ease both;
+  transition: border-color 0.2s;
+}
+.project-block:hover, .project-block.open { border-color: var(--border2); }
+/* Circuit trace along the top edge, matching the mod cards. */
+.project-block::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 64px; height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent); opacity: 0.5;
+}
+
+/* Header: an identity toggle button on the left, a link + chevron aside on the right. */
+.project-head {
+  display: flex; align-items: flex-start;
+  /* Rounded so the hover wash is a self-contained "button" highlight — the same shape whether the
+     block is open or closed. Collapsed it rounds with the whole block; open its rounded lower edge
+     sits above the repo grid (which the body's top padding sets apart) rather than a hard seam. */
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+}
+/*
+ * A faint accent wash on hover rather than a flat grey step — it ties the interaction to the brand
+ * accent and stays distinct from the bg2 fill of the repo cards inside.
+ */
+.project-head:hover { background: oklch(from var(--accent) l c h / 0.055); }
+
+.project-toggle {
+  flex: 1; min-width: 0; text-align: left; cursor: pointer;
+  background: none; border: none; font-family: var(--font); color: inherit;
+  padding: 20px 12px 20px 24px;
+}
+.project-name { font-size: 19px; font-weight: 700; letter-spacing: -0.5px; }
+.project-tagline { font-size: 14px; color: var(--tx2); margin-top: 6px; max-width: 62ch; text-wrap: pretty; }
+.project-langs { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
+.project-lang {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 12px; color: var(--tx3);
+}
+.project-lang .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+
+/* Right-hand aside: repo count, the always-visible GitHub link, and the toggle chevron. */
+.project-head-aside {
+  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+  padding: 20px 24px 20px 0;
+}
+.project-count { font-family: var(--mono); font-size: 12px; color: var(--tx3); white-space: nowrap; }
+/* Quiet by default; lights to the accent on hover, like the presence links. */
+.project-link {
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 12px; color: var(--tx2); text-decoration: none;
+  padding: 7px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg2); transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.project-link:hover, .project-link:focus-visible {
+  color: var(--accent); border-color: oklch(from var(--accent) l c h / 0.5); background: var(--accentGlow);
+}
+.project-chevron {
+  display: inline-flex; cursor: pointer; padding: 4px;
+  background: none; border: none; color: var(--tx3);
+  transition: transform 0.2s ease, color 0.15s ease;
+}
+.project-head:hover .project-chevron { color: var(--tx2); }
+.project-block.open .project-chevron { transform: rotate(180deg); color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .project-chevron { transition: color 0.15s ease; } }
+
+/* Expanded content: the member grid. Top padding (plus the header's own bottom padding) sets the
+   cards apart from the header highlight; sides align with the header content. */
+.project-body {
+  padding: 10px 24px 30px;
+  animation: fadeUp 0.3s ease both;
+}
+.project-members { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+/* Members sit inside the block, so a slightly recessed fill separates them from its surface. */
+.project-members .mod-card { background: var(--bg2); }
 
 /* Contributions */
 .contrib-list { display: flex; flex-direction: column; gap: 10px; }
