@@ -2,10 +2,14 @@ import { Component, computed, inject, input } from '@angular/core';
 import { GithubService } from '../core/github.service';
 import { LANGUAGE_COLORS } from '../data/content';
 import { CatalogEntry } from '../data/catalog';
+import { Repo } from '../core/models';
 import { Icon } from './icon';
 
 /**
  * Repository card. The title comes from the catalog; everything else is live GitHub data.
+ *
+ * Live data is looked up from the user's repos by name, unless `data` is supplied — org repos
+ * (the featured showcase) live in a separate map, so those callers pass the resolved `Repo` in.
  *
  * Star/fork counts are hidden when both are zero — most repos have none, and twenty "0 0" rows
  * would bury the two repos that actually have traction.
@@ -52,8 +56,10 @@ export class Card {
 
   readonly entry = input.required<CatalogEntry>();
   readonly delay = input(0);
+  /** Pre-resolved live data. When set, it's used instead of the by-name lookup (see class doc). */
+  readonly data = input<Repo | undefined>(undefined);
 
-  readonly repo = computed(() => this.github.repo(this.entry().repo));
+  readonly repo = computed(() => this.data() ?? this.github.repo(this.entry().repo));
   readonly hasStats = computed(() => {
     const r = this.repo();
     return !!r && (r.stars > 0 || r.forks > 0);

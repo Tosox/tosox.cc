@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, isDevMode, signal } from '@angular/core';
 import { CATALOG_REPOS } from '../data/catalog';
+import { FEATURED_REPOS } from '../data/featured';
 import { Contribution, Repo, Snapshot } from './models';
 
 /**
@@ -35,6 +36,15 @@ export class GithubService {
     return CATALOG_REPOS.filter((name) => !(name in repos));
   });
 
+  /** Curated org repos (see `data/featured.ts`) with no match in the live org data. */
+  readonly missingOrgRepos = computed<string[]>(() => {
+    const orgs = this.snapshot()?.orgs;
+    if (!orgs) return [];
+    return FEATURED_REPOS.filter(({ org, repo }) => !orgs[org]?.[repo]).map(
+      ({ org, repo }) => `${org}/${repo}`,
+    );
+  });
+
   constructor() {
     this.load();
   }
@@ -53,6 +63,13 @@ export class GithubService {
               `made private? Update web/src/app/data/catalog.ts:\n  ${missing.join('\n  ')}`,
           );
         }
+        const missingOrg = this.missingOrgRepos();
+        if (isDevMode() && missingOrg.length) {
+          console.warn(
+            `[featured] ${missingOrg.length} curated org repo(s) not found on GitHub — renamed, ` +
+              `deleted or made private? Update web/src/app/data/featured.ts:\n  ${missingOrg.join('\n  ')}`,
+          );
+        }
       },
       error: () => {
         this.failed.set(true);
@@ -64,5 +81,10 @@ export class GithubService {
   /** Live data for a repository by name (e.g. "Autocomplete-Tasks"), or undefined if not loaded. */
   repo(name: string): Repo | undefined {
     return this.snapshot()?.repos?.[name];
+  }
+
+  /** Live data for an organization's repository (e.g. "CoHModSDK", "MatchTimer"), or undefined. */
+  orgRepo(org: string, name: string): Repo | undefined {
+    return this.snapshot()?.orgs?.[org]?.[name];
   }
 }

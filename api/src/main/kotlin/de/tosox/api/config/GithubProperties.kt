@@ -9,6 +9,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class GithubProperties(
 	/** GitHub username whose profile, repos and PRs are shown. */
 	val username: String = "Tosox",
+	/**
+	 * Organizations whose repositories are fetched for the "Frameworks & SDKs" showcase, keyed by
+	 * org login. Their repos are stored separately from the user's own (see `Snapshot.orgs`), so a
+	 * repo that exists under both an org and the user account never collides.
+	 */
+	val organizations: List<String> = listOf("rpc4games", "CoHModSDK", "CodeSparkApp"),
 	/** Optional personal access token; blank = unauthenticated (60 req/hr). */
 	val token: String = "",
 	/** Users/orgs excluded from the "external contributions" search (e.g. the user's own account). */

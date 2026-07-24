@@ -27,6 +27,8 @@ export interface Contribution {
 export interface Snapshot {
   profile: Profile;
   repos: Record<string, Repo>;
+  /** Organization repositories, keyed by org login and then by repo name. See `data/featured.ts`. */
+  orgs: Record<string, Record<string, Repo>>;
   contributions: Contribution[];
   generatedAt: string;
 }
