@@ -31,7 +31,7 @@ export const SOCIAL_LINKS: SocialLink[] = [
   { icon: 'kofi', label: 'Support me', href: 'https://ko-fi.com/tosox', group: 'support' },
   { icon: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@tosox', group: 'presence' },
   { icon: 'moddb', label: 'ModDB', href: 'https://www.moddb.com/members/tosox', group: 'presence' },
-  { icon: 'forge', label: 'SPT Forge', href: 'https://forge.sp-tarkov.com/user/79394/tosox', group: 'presence' },
+  { icon: 'forge', label: 'SPT Forge', href: 'https://sp-mod.com/user/79394/tosox', group: 'presence' },
   { icon: 'wgmods', label: 'WGmods', href: 'https://wgmods.net/search/?owner=226623', group: 'presence' },
 ];
 
