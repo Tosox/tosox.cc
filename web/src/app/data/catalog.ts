@@ -83,6 +83,7 @@ export const CATALOG: CatalogGroup[] = [
       { repo: 'Modbrew', title: 'Modbrew' },
       { repo: 'xml-encoding-resolver', title: 'XML Encoding Resolver' },
       { repo: 'xray-db-7z-plugin', title: 'X-Ray DB 7-Zip Plugin' },
+      { repo: 'xray-xr-7z-plugin', title: 'X-Ray XR 7-Zip Plugin' },
     ],
   },
 ];
