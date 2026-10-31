@@ -2,6 +2,8 @@ import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
+import { NAV_TABS } from './data/content';
+import { Footer } from './shared/footer';
 
 /**
  * App shell: fixed nav, a scroll container for the routed content, footer.
@@ -15,7 +17,7 @@ import { filter } from 'rxjs';
  */
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Footer],
   template: `
     <nav>
       <a class="nav-logo" routerLink="/about">tosox<span>.cc</span></a>
@@ -31,21 +33,13 @@ import { filter } from 'rxjs';
         <router-outlet />
 
         <div class="divider" style="margin-top: 40px"></div>
-        <footer><span>tosox.cc — {{ year }}</span></footer>
+        <app-footer />
       </div>
     </div>
   `,
 })
 export class App {
-  protected readonly year = new Date().getFullYear();
-
-  protected readonly tabs = [
-    { path: 'about', label: 'About' },
-    { path: 'work', label: 'My Work' },
-    { path: 'projects', label: 'My Projects' },
-    { path: 'contributions', label: 'Contributions' },
-    { path: 'skills', label: 'Skills' },
-  ];
+  protected readonly tabs = NAV_TABS;
 
   private readonly scroll = viewChild<ElementRef<HTMLElement>>('scroll');
 

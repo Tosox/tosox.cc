@@ -1,6 +1,22 @@
 import { IconName } from '../shared/icon';
 
 export const GITHUB_USERNAME = 'Tosox';
+export const SITE_REPO_URL = 'https://github.com/Tosox/tosox.cc';
+
+/** Main pages, shown as the nav tabs and repeated in the footer. */
+export const NAV_TABS = [
+  { path: 'about', label: 'About' },
+  { path: 'work', label: 'My Work' },
+  { path: 'projects', label: 'My Projects' },
+  { path: 'contributions', label: 'Contributions' },
+  { path: 'skills', label: 'Skills' },
+];
+
+export const PRIVACY_CONTACT = {
+  name: 'Tosox',
+  email: 'tosoxdev@gmail.com',
+};
+export const PRIVACY_LAST_UPDATED = 'October 31, 2026';
 /**
  * Served by our own API, which mirrors the GitHub avatar, so visitors' browsers never contact GitHub.
  * AVATAR_FALLBACK_URL is a static copy bundled with the site, used if the API is unreachable.

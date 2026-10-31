@@ -563,9 +563,37 @@ nav {
 }
 .stat-num { color: var(--tx); font-weight: 600; }
 
-/* Footer */
-footer { padding: 20px 0; display: flex; justify-content: center; align-items: center; }
-footer span { font-family: var(--mono); font-size: 12px; color: var(--tx3); }
+/* Footer — brand block, link columns, quiet bottom row. */
+.site-footer { padding: 48px 0 28px; }
+.footer-main {
+  display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px;
+}
+.footer-brand .nav-logo { display: inline-flex; }
+.footer-tagline { margin-top: 10px; font-size: 14px; color: var(--tx2); }
+.footer-note { margin-top: 18px; font-size: 13px; color: var(--tx3); }
+.footer-note a { color: var(--tx2); text-decoration: underline; text-underline-offset: 3px; }
+.footer-note a:hover { color: var(--accent); }
+.footer-col { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.footer-col-title {
+  font-family: var(--mono); font-size: 11px; color: var(--accent);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+}
+.footer-col a { font-size: 14px; color: var(--tx2); text-decoration: none; transition: color 0.15s ease; }
+.footer-col a:hover, .footer-col a:focus-visible { color: var(--tx); }
+.footer-bottom {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px;
+  margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+  font-family: var(--mono); font-size: 12px; color: var(--tx3);
+}
+
+/* Legal text (privacy policy) */
+.legal { display: flex; flex-direction: column; gap: 16px; }
+.legal h2 { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 10px; }
+.legal p, .legal li { font-size: 15px; color: var(--tx2); line-height: 1.75; max-width: 75ch; text-wrap: pretty; }
+.legal p + p, .legal p + ul, .legal ul + p { margin-top: 0.8em; }
+.legal ul { padding-left: 20px; }
+.legal a { color: var(--accent); }
+.legal strong { color: var(--tx); font-weight: 600; }
 
 @media (max-width: 700px) {
   nav { padding: 0 16px; }
@@ -577,4 +605,6 @@ footer span { font-family: var(--mono); font-size: 12px; color: var(--tx3); }
   .hero-name { font-size: 32px; }
   .about-grid { grid-template-columns: 1fr; }
   .cards-grid { grid-template-columns: 1fr; }
+  .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+  .footer-brand { grid-column: 1 / -1; }
 }
