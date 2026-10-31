@@ -1,7 +1,12 @@
 import { IconName } from '../shared/icon';
 
 export const GITHUB_USERNAME = 'Tosox';
-export const AVATAR_URL = 'https://avatars.githubusercontent.com/u/57193602?v=4';
+/**
+ * Served by our own API, which mirrors the GitHub avatar, so visitors' browsers never contact GitHub.
+ * AVATAR_FALLBACK_URL is a static copy bundled with the site, used if the API is unreachable.
+ */
+export const AVATAR_URL = '/api/github/avatar';
+export const AVATAR_FALLBACK_URL = 'avatar.png';
 
 export const HERO_BIO =
   'I build game mods, dev tooling and open-source infrastructure. ' +

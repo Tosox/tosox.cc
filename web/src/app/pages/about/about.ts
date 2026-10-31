@@ -1,7 +1,14 @@
-import { Component, computed, inject, isDevMode } from '@angular/core';
+import { Component, computed, inject, isDevMode, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { GithubService } from '../../core/github.service';
-import { ABOUT_PARAGRAPHS, AVATAR_URL, FOCUS_AREAS, HERO_BIO, SOCIAL_LINKS } from '../../data/content';
+import {
+  ABOUT_PARAGRAPHS,
+  AVATAR_FALLBACK_URL,
+  AVATAR_URL,
+  FOCUS_AREAS,
+  HERO_BIO,
+  SOCIAL_LINKS,
+} from '../../data/content';
 import { CATALOG } from '../../data/catalog';
 import { Icon } from '../../shared/icon';
 
@@ -33,7 +40,7 @@ const FALLBACK = { repos: 35, stars: 93, followers: 12 };
         <circle cx="160" cy="126" r="2" />
       </svg>
 
-      <img class="hero-avatar" [src]="avatarUrl()" alt="Tosox" />
+      <img class="hero-avatar" [src]="avatarUrl()" (error)="avatarFailed.set(true)" alt="Tosox" />
       <div class="hero-text">
         <div class="hero-name">Tosox</div>
         <div class="hero-bio">{{ heroBio }}</div>
@@ -138,7 +145,10 @@ export class About {
     }
   }
 
-  protected readonly avatarUrl = computed(() => this.github.profile()?.avatarUrl ?? AVATAR_URL);
+  protected readonly avatarFailed = signal(false);
+  protected readonly avatarUrl = computed(() =>
+    this.avatarFailed() ? AVATAR_FALLBACK_URL : AVATAR_URL,
+  );
   protected readonly repos = computed(() => this.github.profile()?.publicRepos ?? FALLBACK.repos);
   protected readonly followers = computed(() => this.github.profile()?.followers ?? FALLBACK.followers);
   protected readonly stars = computed(() => this.github.totalStars() || FALLBACK.stars);

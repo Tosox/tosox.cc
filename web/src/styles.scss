@@ -1,3 +1,6 @@
+// Self-hosted fonts (bundled into the build), so visitors' browsers never contact Google Fonts.
+@use '@fontsource-variable/space-grotesk';
+@use '@fontsource-variable/jetbrains-mono';
 /* Global styles. Class names are shared across components, so this is the single source. */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,8 +28,8 @@
   /* The only warm hue on the site, so the support link reads by temperature rather than by size. */
   --kofi:      oklch(70% 0.170 25);
   --radius:    10px;
-  --font:      'Space Grotesk', sans-serif;
-  --mono:      'JetBrains Mono', monospace;
+  --font:      'Space Grotesk Variable', sans-serif;
+  --mono:      'JetBrains Mono Variable', monospace;
 
   /* Tuning knobs for the texture/motif layer — safe to adjust in isolation. */
   --grain:       0.055;  /* grain overlay opacity */

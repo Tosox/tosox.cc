@@ -2,6 +2,7 @@ package de.tosox.api.github.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.springframework.http.MediaType
 
 /* ─────────────────────────  API output (served at GET /api/github)  ───────────────────────── */
 
@@ -93,3 +94,6 @@ data class GhIssue(
 data class GhPullRequestRef(
 	@JsonProperty("merged_at") val mergedAt: String? = null,
 )
+
+/** The profile picture, mirrored so visitors' browsers never contact GitHub (served at GET /api/github/avatar). */
+class Avatar(val bytes: ByteArray, val contentType: MediaType)

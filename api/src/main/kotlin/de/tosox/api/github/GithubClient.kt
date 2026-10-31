@@ -1,11 +1,13 @@
 package de.tosox.api.github
 
 import de.tosox.api.config.GithubProperties
+import de.tosox.api.github.model.Avatar
 import de.tosox.api.github.model.GhIssue
 import de.tosox.api.github.model.GhRepo
 import de.tosox.api.github.model.GhSearchResponse
 import de.tosox.api.github.model.GhUser
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
@@ -26,6 +28,9 @@ class GithubClient(private val props: GithubProperties) {
 		}
 		builder.build()
 	}
+
+	/** Plain client for the avatar CDN: no API base URL and, deliberately, no auth token. */
+	private val avatarClient: RestClient = RestClient.create()
 
 	/** GET /users/{username} */
 	fun fetchProfile(): GhUser =
@@ -105,9 +110,24 @@ class GithubClient(private val props: GithubProperties) {
 			.orEmpty()
 	}
 
+	/** Downloads the avatar image at [avatarUrl], scaled by GitHub to [AVATAR_SIZE] px. */
+	fun fetchAvatar(avatarUrl: String): Avatar {
+		val separator = if ('?' in avatarUrl) '&' else '?'
+		val response = avatarClient.get()
+			.uri("$avatarUrl${separator}s=$AVATAR_SIZE")
+			.retrieve()
+			.toEntity(ByteArray::class.java)
+		val bytes = response.body ?: error("Empty avatar response")
+		val contentType = response.headers.contentType ?: MediaType.IMAGE_PNG
+		require(contentType.type == "image") { "Avatar has unexpected content type $contentType" }
+		return Avatar(bytes, contentType)
+	}
+
 	companion object {
 		private const val BASE_URL = "https://api.github.com"
 		private const val PER_PAGE = 100
 		private const val MAX_REPO_PAGES = 10
+		/** Displayed at 100 px; 200 keeps it sharp on high-DPI screens. */
+		private const val AVATAR_SIZE = 200
 	}
 }

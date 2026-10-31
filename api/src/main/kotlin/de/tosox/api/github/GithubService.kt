@@ -1,6 +1,7 @@
 package de.tosox.api.github
 
 import de.tosox.api.config.GithubProperties
+import de.tosox.api.github.model.Avatar
 import de.tosox.api.github.model.Contribution
 import de.tosox.api.github.model.GhIssue
 import de.tosox.api.github.model.GhRepo
@@ -27,14 +28,21 @@ class GithubService(
 	@Volatile
 	private var snapshot: Snapshot? = null
 
+	@Volatile
+	private var avatar: Avatar? = null
+
 	/** Current cached snapshot, or null until the first successful refresh. */
 	fun current(): Snapshot? = snapshot
+
+	/** Current cached avatar, or null until it was fetched successfully once. */
+	fun avatar(): Avatar? = avatar
 
 	/** Runs immediately at startup, then every `github.refresh-interval-ms`. */
 	@Scheduled(initialDelay = 0, fixedDelayString = "\${github.refresh-interval-ms}")
 	fun refresh() {
 		try {
 			val user = client.fetchProfile()
+			refreshAvatar(user.avatarUrl)
 			// Forks aren't the user's own work and are never shown on the site.
 			val repos = client.fetchRepos()
 				.filterNot { it.fork }
@@ -59,6 +67,15 @@ class GithubService(
 			} else {
 				log.warn("GitHub refresh failed; keeping previous snapshot: {}", e.message)
 			}
+		}
+	}
+
+	/** A failed avatar download keeps the previous image instead of failing the whole refresh. */
+	private fun refreshAvatar(avatarUrl: String) {
+		try {
+			avatar = client.fetchAvatar(avatarUrl)
+		} catch (e: Exception) {
+			log.warn("Failed to fetch avatar; keeping previous one: {}", e.message)
 		}
 	}
 
