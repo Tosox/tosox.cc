@@ -43,6 +43,7 @@ export const CATALOG: CatalogGroup[] = [
       { repo: 'SPT-BlackExfilRevision', title: 'Black Exfil Revision' },
       { repo: 'SPT-ChamberAmmoInfo', title: 'Chamber Ammo Info' },
       { repo: 'SPT-MagRetentionReload', title: 'Mag Retention Reload' },
+      { repo: 'SPT-InsuranceFraud', title: 'Insurance Fraud' },
     ],
   },
   {
@@ -50,6 +51,7 @@ export const CATALOG: CatalogGroup[] = [
     repos: [
       { repo: 'wot-appear-offline', title: 'Appear Offline' },
       { repo: 'wot-no-post-battle-spin', title: 'No Post-Battle Spin' },
+      { repo: 'wot-personal-spotted-alert', title: 'Personal Spotted Alert' },
     ],
   },
   {
@@ -72,9 +74,8 @@ export const CATALOG: CatalogGroup[] = [
     label: 'Automation & Bots',
     repos: [
       { repo: 'Tosox-Jr', title: 'Tosox Jr' },
-      { repo: 'anomaly-addon-notifier', title: 'Anomaly Addon Notifier' },
+      { repo: 'moddb-feed-notifier', title: 'ModDB Feed Notifier' },
       { repo: 'moddb-comment-notifier', title: 'ModDB Comment Notifier' },
-      { repo: 'moddb-addon-manager', title: 'ModDB Addon Manager' },
     ],
   },
   {
