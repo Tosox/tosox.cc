@@ -1,11 +1,9 @@
 export interface Profile {
   login: string;
-  avatarUrl: string;
   publicRepos: number;
   followers: number;
 }
 
-/** Live facts about a repository, straight from GitHub. Editorial data lives in `data/catalog.ts`. */
 export interface Repo {
   description: string | null;
   stars: number;
@@ -27,7 +25,7 @@ export interface Contribution {
 export interface Snapshot {
   profile: Profile;
   repos: Record<string, Repo>;
-  /** Organization repositories, keyed by org login and then by repo name. See `data/featured.ts`. */
+  /** Keyed by org, then repo name */
   orgs: Record<string, Record<string, Repo>>;
   contributions: Contribution[];
   generatedAt: string;

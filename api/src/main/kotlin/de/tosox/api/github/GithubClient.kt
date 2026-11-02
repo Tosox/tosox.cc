@@ -12,10 +12,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import org.springframework.web.client.body
 
-/**
- * Thin wrapper around the GitHub REST API. All calls are synchronous and run inside the scheduled
- * refresh job, never on a request thread.
- */
 @Component
 class GithubClient(private val props: GithubProperties) {
 	private val client: RestClient = run {
@@ -29,10 +25,9 @@ class GithubClient(private val props: GithubProperties) {
 		builder.build()
 	}
 
-	/** Plain client for the avatar CDN: no API base URL and, deliberately, no auth token. */
+	// No base URL and, deliberately, no auth token: this talks to the avatar CDN
 	private val avatarClient: RestClient = RestClient.create()
 
-	/** GET /users/{username} */
 	fun fetchProfile(): GhUser =
 		client.get()
 			.uri("/users/{username}", props.username)
@@ -40,58 +35,32 @@ class GithubClient(private val props: GithubProperties) {
 			.body<GhUser>()
 			?: error("Empty profile response for ${props.username}")
 
-	/** GET /users/{username}/repos — paginated, owner repos only. */
-	fun fetchRepos(): List<GhRepo> {
+	fun fetchRepos(): List<GhRepo> = fetchPaged("/users/{name}/repos", props.username, "type" to "owner")
+
+	fun fetchOrgRepos(org: String): List<GhRepo> = fetchPaged("/orgs/{name}/repos", org)
+
+	private fun fetchPaged(path: String, name: String, vararg params: Pair<String, String>): List<GhRepo> {
 		val all = mutableListOf<GhRepo>()
-		var page = 1
-		while (page <= MAX_REPO_PAGES) {
+		for (page in 1..MAX_REPO_PAGES) {
 			val batch = client.get()
 				.uri { b ->
-					b.path("/users/{username}/repos")
+					params.forEach { (k, v) -> b.queryParam(k, v) }
+					b.path(path)
 						.queryParam("per_page", PER_PAGE)
-						.queryParam("type", "owner")
 						.queryParam("sort", "updated")
 						.queryParam("page", page)
-						.build(props.username)
+						.build(name)
 				}
 				.retrieve()
 				.body<Array<GhRepo>>()
-				?.toList()
 				.orEmpty()
-
 			all += batch
 			if (batch.size < PER_PAGE) break
-			page++
 		}
 		return all
 	}
 
-	/** GET /orgs/{org}/repos — paginated, all repositories owned by the organization. */
-	fun fetchOrgRepos(org: String): List<GhRepo> {
-		val all = mutableListOf<GhRepo>()
-		var page = 1
-		while (page <= MAX_REPO_PAGES) {
-			val batch = client.get()
-				.uri { b ->
-					b.path("/orgs/{org}/repos")
-						.queryParam("per_page", PER_PAGE)
-						.queryParam("sort", "updated")
-						.queryParam("page", page)
-						.build(org)
-				}
-				.retrieve()
-				.body<Array<GhRepo>>()
-				?.toList()
-				.orEmpty()
-
-			all += batch
-			if (batch.size < PER_PAGE) break
-			page++
-		}
-		return all
-	}
-
-	/** GET /search/issues — PRs authored by the user in repositories they don't own. */
+	// PRs authored by the user in repositories they don't own
 	fun fetchContributions(): List<GhIssue> {
 		val excludes = props.excludedUsers.joinToString(" ") { "-user:$it" }
 		val query = "is:pr author:${props.username} $excludes".trim()
@@ -110,7 +79,6 @@ class GithubClient(private val props: GithubProperties) {
 			.orEmpty()
 	}
 
-	/** Downloads the avatar image at [avatarUrl], scaled by GitHub to [AVATAR_SIZE] px. */
 	fun fetchAvatar(avatarUrl: String): Avatar {
 		val separator = if ('?' in avatarUrl) '&' else '?'
 		val response = avatarClient.get()
@@ -127,7 +95,6 @@ class GithubClient(private val props: GithubProperties) {
 		private const val BASE_URL = "https://api.github.com"
 		private const val PER_PAGE = 100
 		private const val MAX_REPO_PAGES = 10
-		/** Displayed at 100 px; 200 keeps it sharp on high-DPI screens. */
-		private const val AVATAR_SIZE = 200
+		private const val AVATAR_SIZE = 200 // displayed at 100 px, 2x for high-DPI
 	}
 }

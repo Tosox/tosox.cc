@@ -3,12 +3,7 @@ import { RouterLink } from '@angular/router';
 import { GithubService } from '../core/github.service';
 import { NAV_TABS, SITE_REPO_URL, SOCIAL_LINKS } from '../data/content';
 
-/**
- * Site footer: brand block on the left, grouped link columns, and a quiet bottom row.
- *
- * The "Site" column repeats the nav tabs on purpose: on narrow screens the nav tabs are hidden,
- * which otherwise leaves the footer as the only way to reach the other pages.
- */
+// The "Site" column repeats the nav because the nav tabs are hidden on narrow screens.
 @Component({
   selector: 'app-footer',
   imports: [RouterLink],
@@ -64,7 +59,6 @@ export class Footer {
     (l) => l.icon === 'github' || l.group === 'presence',
   );
 
-  /** "just now" / "12 min ago" / "3 h ago", relative to when the page loaded the snapshot. */
   protected readonly syncedAgo = computed(() => {
     const generatedAt = this.github.snapshot()?.generatedAt;
     if (!generatedAt) return null;

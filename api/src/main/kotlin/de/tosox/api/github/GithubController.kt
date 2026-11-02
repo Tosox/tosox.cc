@@ -10,21 +10,14 @@ import java.time.Duration
 @RestController
 class GithubController(private val service: GithubService) {
 
-	/**
-	 * Returns the cached GitHub snapshot. Responds 503 only while the very first refresh is still
-	 * in progress (no snapshot yet).
-	 */
+	// Both endpoints answer 503 until the first refresh has succeeded
+
 	@GetMapping("/api/github")
 	fun github(): ResponseEntity<Snapshot> =
 		service.current()
 			?.let { ResponseEntity.ok(it) }
 			?: ResponseEntity.status(503).build()
 
-
-	/**
-	 * The mirrored GitHub avatar, so the site never makes visitors' browsers contact GitHub.
-	 * Responds 503 until it has been fetched once; the frontend then falls back to a bundled copy.
-	 */
 	@GetMapping("/api/github/avatar")
 	fun avatar(): ResponseEntity<ByteArray> =
 		service.avatar()

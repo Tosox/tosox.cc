@@ -21,15 +21,6 @@ interface Project {
   members: Member[];
 }
 
-/**
- * The "Frameworks & SDKs" page. Each configured organization (see `data/featured.ts`) renders as a
- * collapsible block: the project's identity is always visible, and expanding reveals a grid of its
- * member repos, reusing the standard {@link Card}. Members with no live data drop out, and a project
- * with none disappears entirely — so nothing renders empty while loading or after a rename.
- *
- * Blocks are collapsed by default: the page is an index of projects first, and the repos are the
- * detail you opt into.
- */
 @Component({
   selector: 'app-projects',
   imports: [Card, Icon],
@@ -70,7 +61,7 @@ interface Project {
                   <a class="project-link" [href]="p.url" target="_blank" rel="noopener noreferrer">
                     <app-icon name="github" [size]="15" /> GitHub
                   </a>
-                  <!-- Secondary, mouse-only mirror of the toggle: the identity button is the accessible control. -->
+                  <!-- Mouse-only duplicate; the button above is the accessible toggle -->
                   <button type="button" class="project-chevron" (click)="toggle(p.url)"
                           tabindex="-1" aria-hidden="true">
                     <app-icon name="chevron" [size]="18" />
@@ -97,7 +88,6 @@ interface Project {
 export class Projects {
   protected readonly github = inject(GithubService);
 
-  /** URLs of the currently expanded blocks. Starts empty — every project is collapsed by default. */
   private readonly open = signal<ReadonlySet<string>>(new Set());
 
   protected readonly projects = computed<Project[]>(() =>
@@ -105,7 +95,6 @@ export class Projects {
       const members: Member[] = p.repos
         .map((entry) => ({ entry, data: this.github.orgRepo(p.org, entry.repo) }))
         .filter((m): m is Member => !!m.data);
-      // Distinct languages across the members, in first-seen order — the project's tech at a glance.
       const langs = [...new Set(members.map((m) => m.data.language).filter((l): l is string => !!l))];
       return { org: p.org, name: p.name, tagline: p.tagline, url: p.url, langs, members };
     }).filter((p) => p.members.length > 0),

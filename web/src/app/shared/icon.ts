@@ -4,18 +4,14 @@ export type IconName =
   | 'github'
   | 'star'
   | 'fork'
-  | 'external'
-  | 'location'
   | 'youtube'
   | 'moddb'
   | 'wgmods'
   | 'forge'
   | 'kofi'
   | 'email'
-  | 'merge'
   | 'chevron';
 
-/** Inline SVG icon set. Colour follows `currentColor`, size is set per usage. */
 @Component({
   selector: 'app-icon',
   template: `
@@ -31,11 +27,6 @@ export type IconName =
         </svg>
       }
       @case ('fork') {
-        <!--
-          Two parent nodes branching into one child. Built from primitives rather than a single
-          path: the previous path was malformed and occupied only the left 60% of the viewBox, so
-          it rendered off-centre and undersized beside the star.
-        -->
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
              stroke-linecap="round" stroke-linejoin="round"
              [attr.width]="size()" [attr.height]="size()">
@@ -46,16 +37,6 @@ export type IconName =
           <path d="M12 12v4.6"/>
         </svg>
       }
-      @case ('external') {
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" [attr.width]="size()" [attr.height]="size()">
-          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
-        </svg>
-      }
-      @case ('location') {
-        <svg viewBox="0 0 24 24" fill="currentColor" [attr.width]="size()" [attr.height]="size()">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-        </svg>
-      }
       @case ('youtube') {
         <svg viewBox="0 0 24 24" fill="currentColor" [attr.width]="size()" [attr.height]="size()">
           <path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2C0 8.1 0 12 0 12s0 3.9.6 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/>
@@ -63,22 +44,11 @@ export type IconName =
       }
       @case ('moddb') {
         <svg viewBox="0 0 24 24" fill="currentColor" [attr.width]="size()" [attr.height]="size()">
-          <!--
-            ModDB's spanner mark: circular head (r 5.25 at 12,8.4) with a flat-floored jaw cut into
-            the top, flowing tangentially into a rounded grip. Drawn as one silhouette with no
-            outline, to match the rest of this monochrome set.
-          -->
           <path d="M10.5 3.37L10.5 9L13.5 9L13.5 3.37A5.25 5.25 0 0 1 14.05 13.23L14.05 20.9A1.2 1.2 0 0 1 12.85 22.1L11.15 22.1A1.2 1.2 0 0 1 9.95 20.9L9.95 13.23A5.25 5.25 0 0 1 10.5 3.37Z"/>
         </svg>
       }
       @case ('wgmods') {
         <svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" [attr.width]="size()" [attr.height]="size()">
-          <!--
-            WGmods' cog with the World of Tanks emblem cut out of it. Geometry measured off the
-            real favicon rather than eyeballed: 8 teeth, tip r=12, root r=9.78, tooth half-angle
-            9deg at the tip and 15deg at the root; the emblem is the roof-and-stem "T" plus two
-            flanking bars, knocked out via fill-rule=evenodd exactly as in the original.
-          -->
           <path d="M9.47 2.55L10.12 0.15L13.88 0.15L14.53 2.55A9.78 9.78 0 0 1 16.89 3.53L19.05 2.29L21.71 4.95L20.47 7.11A9.78 9.78 0 0 1 21.45 9.47L23.85 10.12L23.85 13.88L21.45 14.53A9.78 9.78 0 0 1 20.47 16.89L21.71 19.05L19.05 21.71L16.89 20.47A9.78 9.78 0 0 1 14.53 21.45L13.88 23.85L10.12 23.85L9.47 21.45A9.78 9.78 0 0 1 7.11 20.47L4.95 21.71L2.29 19.05L3.53 16.89A9.78 9.78 0 0 1 2.55 14.53L0.15 13.88L0.15 10.12L2.55 9.47A9.78 9.78 0 0 1 3.53 7.11L2.29 4.95L4.95 2.29L7.11 3.53A9.78 9.78 0 0 1 9.47 2.55Z M9.3 4.55L14.7 4.55L18 7.8L13.56 7.8L13.56 20.65L12 22.15L10.44 20.65L10.44 7.8L6 7.8Z M6 8.6L8.96 8.6L8.96 14.64L10.37 16.05L8.22 18.06L6 16Z M18 8.6L15.04 8.6L15.04 14.64L13.63 16.05L15.78 18.06L18 16Z"/>
         </svg>
       }
@@ -102,11 +72,6 @@ export type IconName =
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round" [attr.width]="size()" [attr.height]="size()">
           <polyline points="6 9 12 15 18 9" />
-        </svg>
-      }
-      @case ('merge') {
-        <svg viewBox="0 0 24 24" fill="currentColor" [attr.width]="size()" [attr.height]="size()">
-          <path d="M17 3a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-3.88-3H7.82A4 4 0 014 11a4 4 0 01-4-4 4 4 0 014-4 4 4 0 013.82 3h5.3A4.01 4.01 0 0117 3M7 7a2 2 0 00-2-2 2 2 0 00-2 2 2 2 0 002 2 2 2 0 002-2m10 0a2 2 0 00-2-2 2 2 0 00-2 2 2 2 0 002 2 2 2 0 002-2M4 13a4 4 0 014 4 4 4 0 01-4 4 4 4 0 01-4-4 4 4 0 014-4m0 2a2 2 0 00-2 2 2 2 0 002 2 2 2 0 002-2 2 2 2 0 00-2-2z"/>
         </svg>
       }
     }

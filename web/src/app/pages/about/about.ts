@@ -12,19 +12,11 @@ import {
 import { CATALOG } from '../../data/catalog';
 import { Icon } from '../../shared/icon';
 
-/** Stats shown before the GitHub snapshot loads. */
-const FALLBACK = { repos: 35, stars: 93, followers: 12 };
-
 @Component({
   selector: 'app-about',
   imports: [Icon, RouterLink],
   template: `
     <div class="hero">
-      <!--
-        Decorative circuit tracery echoing the avatar. Every run terminates in a node; the right
-        ends deliberately extend to the viewBox edge so the traces read as continuing off-screen.
-        preserveAspectRatio uses meet, not slice, so nothing is cropped at any aspect ratio.
-      -->
       <svg class="hero-trace" viewBox="0 0 340 200" preserveAspectRatio="xMaxYMid meet" aria-hidden="true">
         <path d="M340 30 H265 L245 50 H150" />
         <path d="M340 62 H295 L275 82 H205 L190 97 H120" />
@@ -62,7 +54,6 @@ const FALLBACK = { repos: 35, stars: 93, followers: 12 };
           }
         </div>
 
-        <!-- Publishing platforms: navigational, so muted until hover. -->
         <div class="hero-presence">
           <span class="hero-presence-label">Also on</span>
           @for (s of presence(); track s.label) {
@@ -90,10 +81,6 @@ const FALLBACK = { repos: 35, stars: 93, followers: 12 };
 
         <div class="about-card">
           <div class="about-card-label">Focus areas</div>
-          <!--
-            Each row links through to the matching tab on /work and carries a live repo count, so
-            About is a way into the work rather than a second, drifting description of it.
-          -->
           <div class="focus-list">
             @for (f of focusAreas(); track f.label) {
               <a class="focus-item" [routerLink]="['/work']" [queryParams]="f.query">
@@ -119,10 +106,6 @@ export class About {
   protected readonly actions = computed(() => SOCIAL_LINKS.filter((s) => s.group !== 'presence'));
   protected readonly presence = computed(() => SOCIAL_LINKS.filter((s) => s.group === 'presence'));
 
-  /**
-   * Focus areas with a live repo count and a deep link. Areas whose groups have no visible repos
-   * drop out entirely, so nothing on this page can point at an empty tab.
-   */
   protected readonly focusAreas = computed(() =>
     FOCUS_AREAS.map((f) => {
       const groups = CATALOG.filter((g) => f.groups.includes(g.label));
@@ -149,7 +132,7 @@ export class About {
   protected readonly avatarUrl = computed(() =>
     this.avatarFailed() ? AVATAR_FALLBACK_URL : AVATAR_URL,
   );
-  protected readonly repos = computed(() => this.github.profile()?.publicRepos ?? FALLBACK.repos);
-  protected readonly followers = computed(() => this.github.profile()?.followers ?? FALLBACK.followers);
-  protected readonly stars = computed(() => this.github.totalStars() || FALLBACK.stars);
+  protected readonly repos = computed(() => this.github.profile()?.publicRepos ?? '–');
+  protected readonly followers = computed(() => this.github.profile()?.followers ?? '–');
+  protected readonly stars = computed(() => (this.github.snapshot() ? this.github.totalStars() : '–'));
 }

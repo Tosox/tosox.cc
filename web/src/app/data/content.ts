@@ -1,9 +1,7 @@
 import { IconName } from '../shared/icon';
 
-export const GITHUB_USERNAME = 'Tosox';
 export const SITE_REPO_URL = 'https://github.com/Tosox/tosox.cc';
 
-/** Main pages, shown as the nav tabs and repeated in the footer. */
 export const NAV_TABS = [
   { path: 'about', label: 'About' },
   { path: 'work', label: 'My Work' },
@@ -17,10 +15,7 @@ export const PRIVACY_CONTACT = {
   email: 'tosoxdev@gmail.com',
 };
 export const PRIVACY_LAST_UPDATED = 'October 31, 2026';
-/**
- * Served by our own API, which mirrors the GitHub avatar, so visitors' browsers never contact GitHub.
- * AVATAR_FALLBACK_URL is a static copy bundled with the site, used if the API is unreachable.
- */
+// Mirrored by the API so browsers never contact GitHub; the bundled copy is the fallback
 export const AVATAR_URL = '/api/github/avatar';
 export const AVATAR_FALLBACK_URL = 'avatar.png';
 
@@ -28,14 +23,7 @@ export const HERO_BIO =
   'I build game mods, dev tooling and open-source infrastructure. ' +
   'Fluent in Java, C++, Python and Lua — and whatever else gets the job done.';
 
-/**
- * `group` drives the visual weight, because these links do three different jobs:
- *   action   — what I want a visitor to do (see the code, get in touch)
- *   support  — the only link that asks something of the visitor
- *   presence — where the work is published; navigational, so deliberately quiet
- *
- * Flat-listing all six as equal buttons is what made Ko-fi indistinguishable from SPT Forge.
- */
+// action = buttons, support = the Ko-fi button, presence = quiet "Also on" links
 export type LinkGroup = 'action' | 'support' | 'presence';
 
 export interface SocialLink {
@@ -56,13 +44,6 @@ export const SOCIAL_LINKS: SocialLink[] = [
   { icon: 'wgmods', label: 'WGmods', href: 'https://wgmods.net/search/?owner=226623', group: 'presence' },
 ];
 
-/**
- * The About prose. Kept here with the rest of the editorial copy rather than inline in the template,
- * so wording changes don't mean touching a component.
- *
- * Deliberately not a list of what I build — the focus areas below already say that, with live counts.
- * This is the part a generated list can't cover.
- */
 export const ABOUT_PARAGRAPHS: string[] = [
   'I started out writing cheats for Counter-Strike. The cheating itself never really appealed to ' +
     'me, but I was fascinated by how much you could change with nothing but code.',
@@ -76,13 +57,7 @@ export const ABOUT_PARAGRAPHS: string[] = [
 export interface FocusArea {
   label: string;
   sub: string;
-  /**
-   * Catalog group labels this area covers. Repo counts are summed from live data, so a focus area
-   * can never claim work that isn't on the site. Must match `CATALOG[].label` exactly — a typo is
-   * reported by `About.unknownGroups()` in dev rather than silently rendering a count of zero.
-   *
-   * One group deep-links to that tab on /work; several link to the unfiltered list.
-   */
+  // Must match `CATALOG[].label` exactly
   groups: string[];
 }
 
@@ -114,11 +89,6 @@ export const FOCUS_AREAS: FocusArea[] = [
   },
 ];
 
-/**
- * Skills split by proficiency rather than by category, mirroring the profile README at
- * github.com/Tosox/Tosox. Proficiency is a self-assessment — the one thing here that can only be
- * editorial. The measured counterpart is the repository-language bar, which is derived live.
- */
 export interface SkillTier {
   tier: string;
   note: string;
@@ -141,7 +111,7 @@ export const SKILL_TIERS: SkillTier[] = [
   },
 ];
 
-/** GitHub's language colors, used for the repository-language bar. */
+// GitHub's language colors
 export const LANGUAGE_COLORS: Record<string, string> = {
   'C++': '#f34b7d',
   Java: '#b07219',

@@ -1,20 +1,6 @@
-/**
- * The site map: which repositories appear, in which group, in which order, under which title.
- *
- * This is the *only* editorial layer. Everything else — description, language, stars, forks,
- * archived status, URL — comes live from GitHub via `/api/github`, keyed on `repo`.
- *
- * A repository not listed here does not appear on the site. To add one, add an entry; to hide one,
- * remove it. Order within a group is the display order.
- *
- * `repo` must match the GitHub repository name exactly. If it doesn't, the card is skipped and the
- * name is reported by `GithubService.missingRepos()` (logged in dev) — so a rename on GitHub
- * surfaces as a warning rather than a silently vanishing card.
- */
+/** Which repos appear on /work, grouped and in display order. Everything else comes live from GitHub. */
 export interface CatalogEntry {
-  /** Exact GitHub repository name — the join key to the live data. */
   repo: string;
-  /** Display name. Deliberately mandatory: repo names don't prettify reliably. */
   title: string;
 }
 
@@ -88,6 +74,3 @@ export const CATALOG: CatalogGroup[] = [
     ],
   },
 ];
-
-/** Every curated repo name, in catalog order. */
-export const CATALOG_REPOS: string[] = CATALOG.flatMap((g) => g.repos.map((r) => r.repo));

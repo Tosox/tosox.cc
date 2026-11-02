@@ -1,10 +1,6 @@
 import { Component } from '@angular/core';
 import { PRIVACY_CONTACT, PRIVACY_LAST_UPDATED } from '../../data/content';
 
-/**
- * Privacy policy (GDPR Art. 13). Keep it in sync with the infrastructure: if analytics, cookies,
- * third-party embeds or server logs are ever added, this page has to say so.
- */
 @Component({
   selector: 'app-privacy',
   template: `

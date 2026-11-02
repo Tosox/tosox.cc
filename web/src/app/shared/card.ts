@@ -5,15 +5,6 @@ import { CatalogEntry } from '../data/catalog';
 import { Repo } from '../core/models';
 import { Icon } from './icon';
 
-/**
- * Repository card. The title comes from the catalog; everything else is live GitHub data.
- *
- * Live data is looked up from the user's repos by name, unless `data` is supplied — org repos
- * (the featured showcase) live in a separate map, so those callers pass the resolved `Repo` in.
- *
- * Star/fork counts are hidden when both are zero — most repos have none, and twenty "0 0" rows
- * would bury the two repos that actually have traction.
- */
 @Component({
   selector: 'app-card',
   imports: [Icon],
@@ -40,7 +31,6 @@ import { Icon } from './icon';
             <span class="meta-archived">Archived</span>
           }
           @if (hasStats()) {
-            <!-- Shown as a pair whenever either is non-zero; hidden entirely when both are 0. -->
             <span class="meta-stats">
               <span class="meta-stat stars"><app-icon name="star" [size]="13" /><b>{{ r.stars }}</b></span>
               <span class="meta-stat"><app-icon name="fork" [size]="13" /><b>{{ r.forks }}</b></span>
@@ -56,7 +46,7 @@ export class Card {
 
   readonly entry = input.required<CatalogEntry>();
   readonly delay = input(0);
-  /** Pre-resolved live data. When set, it's used instead of the by-name lookup (see class doc). */
+  /** Org repos aren't in the user's repo map, so their callers pass the data in. */
   readonly data = input<Repo | undefined>(undefined);
 
   readonly repo = computed(() => this.data() ?? this.github.repo(this.entry().repo));

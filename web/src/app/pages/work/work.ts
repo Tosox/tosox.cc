@@ -39,13 +39,7 @@ const ALL = 'All';
           @if (showHeaders()) {
             <div class="section-label" style="margin: 32px 0 14px">{{ b.label }}</div>
           }
-          <!--
-            anim-alt flips on every tab change. A CSS animation only runs when an element is
-            created, and switching between "All" and a category reuses the nodes that category
-            already had — so the fade-in would silently skip. Toggling the class swaps
-            animation-name between two identical keyframes, which restarts the animation whether
-            the node is new or reused.
-          -->
+          <!-- anim-alt swaps between two identical keyframes to restart the fade-in on reused nodes. -->
           <div class="cards-grid" [class.anim-alt]="animAlt()">
             @for (e of b.entries; track e.repo) {
               <app-card [entry]="e" [delay]="$index * 50" />
@@ -63,12 +57,10 @@ export class Work {
 
   private readonly cat = signal(ALL);
 
-  /** Flipped on every tab change; see the anim-alt comment in the template. */
   protected readonly animAlt = signal(false);
 
   constructor() {
-    // The URL is the single source of truth: tabs navigate, and this drives the state. That makes a
-    // filtered view shareable and lets About deep-link straight into a category.
+    // The URL drives the tab, so About can deep-link into a category
     this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const next = params.get('cat') ?? ALL;
       if (next === this.cat()) return;
@@ -86,16 +78,11 @@ export class Work {
     });
   }
 
-  /** Falls back to "All" for a `cat` that matches no group, so a stale link never renders empty. */
   protected readonly activeCat = computed(() => {
     const cat = this.cat();
     return this.resolved().some((g) => g.label === cat) ? cat : ALL;
   });
 
-  /**
-   * Catalog groups with entries that have no live data removed, so a renamed or deleted repo leaves
-   * no empty card. Groups that end up empty disappear entirely.
-   */
   private readonly resolved = computed<Block[]>(() =>
     CATALOG.map((g) => ({
       label: g.label,
@@ -115,6 +102,5 @@ export class Work {
     return cat === ALL ? groups : groups.filter((g) => g.label === cat);
   });
 
-  /** In "All" the group headers organise the page; in a filtered view the tab already says it. */
   protected readonly showHeaders = computed(() => this.activeCat() === ALL);
 }

@@ -4,7 +4,6 @@ import { LANGUAGE_COLORS, SKILL_TIERS } from '../../data/content';
 
 interface LangStat {
   lang: string;
-  count: number;
   pct: number;
   flex: number;
   color: string;
@@ -20,11 +19,6 @@ interface LangStat {
         <div class="section-desc">Languages, frameworks, tools and platforms.</div>
       </div>
 
-      <!--
-        Split by proficiency, not by category: the first tier carries visual weight, the second is
-        deliberately quieter. Categorising instead (Languages / Web / Tools / …) gave every pill the
-        same weight, which told a reader nothing.
-      -->
       <div class="skill-tiers">
         @for (t of tiers; track t.tier; let i = $index) {
           <div class="skill-tier" [class.core]="i === 0" [style.animationDelay.ms]="i * 60">
@@ -55,7 +49,7 @@ interface LangStat {
       @if (langStats().length) {
         <div class="lang-block">
           <div class="section-label">Repository languages</div>
-          <!-- &#8209; is a non-breaking hyphen: a plain one lets "self-" and "reported." split. -->
+          <!-- &#8209;: non-breaking hyphen -->
           <p class="lang-note">
             Share of my public repositories by primary language — measured, not self&#8209;reported.
           </p>
@@ -93,7 +87,6 @@ export class Skills {
     const total = sorted.reduce((s, [, c]) => s + c, 0);
     return sorted.map(([lang, count]) => ({
       lang,
-      count,
       pct: total ? Math.round((count / total) * 100) : 0,
       flex: total ? count / total : 0,
       color: LANGUAGE_COLORS[lang] ?? '#555',

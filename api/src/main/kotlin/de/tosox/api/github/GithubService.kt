@@ -13,10 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.Instant
 
-/**
- * Holds the cached GitHub [Snapshot] and refreshes it on a schedule. On refresh failure (e.g. a rate
- * limit or GitHub outage) the previous snapshot is retained as last-known-good.
- */
+/** Caches the GitHub [Snapshot]; a failed refresh keeps the previous one. */
 @Service
 class GithubService(
 	private val client: GithubClient,
@@ -31,19 +28,15 @@ class GithubService(
 	@Volatile
 	private var avatar: Avatar? = null
 
-	/** Current cached snapshot, or null until the first successful refresh. */
 	fun current(): Snapshot? = snapshot
 
-	/** Current cached avatar, or null until it was fetched successfully once. */
 	fun avatar(): Avatar? = avatar
 
-	/** Runs immediately at startup, then every `github.refresh-interval-ms`. */
 	@Scheduled(initialDelay = 0, fixedDelayString = "\${github.refresh-interval-ms}")
 	fun refresh() {
 		try {
 			val user = client.fetchProfile()
 			refreshAvatar(user.avatarUrl)
-			// Forks aren't the user's own work and are never shown on the site.
 			val repos = client.fetchRepos()
 				.filterNot { it.fork }
 				.associate { it.name to it.toRepo() }
@@ -51,7 +44,7 @@ class GithubService(
 			val contributions = client.fetchContributions().map { it.toContribution() }
 
 			snapshot = Snapshot(
-				profile = Profile(user.login, user.avatarUrl, user.publicRepos, user.followers),
+				profile = Profile(user.login, user.publicRepos, user.followers),
 				repos = repos,
 				orgs = orgs,
 				contributions = contributions,
@@ -70,7 +63,6 @@ class GithubService(
 		}
 	}
 
-	/** A failed avatar download keeps the previous image instead of failing the whole refresh. */
 	private fun refreshAvatar(avatarUrl: String) {
 		try {
 			avatar = client.fetchAvatar(avatarUrl)
@@ -79,11 +71,7 @@ class GithubService(
 		}
 	}
 
-	/**
-	 * Repositories for each configured organization, keyed by org login then repo name. A single org
-	 * failing (renamed, deleted, rate-limited) is logged and yields an empty map for that org rather
-	 * than failing the whole refresh and discarding the otherwise-good snapshot.
-	 */
+	// One failing org yields an empty map instead of discarding the whole snapshot
 	private fun fetchOrgs(): Map<String, Map<String, Repo>> =
 		props.organizations.associateWith { org ->
 			try {
@@ -108,7 +96,7 @@ class GithubService(
 
 	private fun GhIssue.toContribution(): Contribution {
 		val resolvedState = if (pullRequest?.mergedAt != null) "merged" else state
-		// repository_url looks like https://api.github.com/repos/owner/name -> "owner/name"
+		// https://api.github.com/repos/owner/name -> "owner/name"
 		val repo = repositoryUrl.substringAfter("/repos/", repositoryUrl)
 		return Contribution(
 			title = title,

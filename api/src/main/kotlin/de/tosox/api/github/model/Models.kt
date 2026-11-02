@@ -4,34 +4,23 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.http.MediaType
 
-/* ─────────────────────────  API output (served at GET /api/github)  ───────────────────────── */
+// Served at GET /api/github
 
-/** The full cached snapshot returned to the frontend in a single request. */
 data class Snapshot(
 	val profile: Profile,
-	/** Keyed by repository name (e.g. "Autocomplete-Tasks"). */
 	val repos: Map<String, Repo>,
-	/**
-	 * Repositories of the configured organizations, keyed by org login and then by repository name.
-	 * Kept separate from [repos] so an org repo and a user repo of the same name never collide.
-	 */
+	/** Keyed by org, then repo name; separate from [repos] so same-named repos never collide */
 	val orgs: Map<String, Map<String, Repo>>,
 	val contributions: List<Contribution>,
-	/** ISO-8601 timestamp of when this snapshot was built. */
 	val generatedAt: String,
 )
 
 data class Profile(
 	val login: String,
-	val avatarUrl: String,
 	val publicRepos: Int,
 	val followers: Int,
 )
 
-/**
- * Live facts about a repository. Everything here comes from GitHub — the frontend supplies only the
- * editorial layer (which repos to show, in which group, under which title).
- */
 data class Repo(
 	val description: String?,
 	val stars: Int,
@@ -43,16 +32,17 @@ data class Repo(
 
 data class Contribution(
 	val title: String,
-	/** "owner/name" of the target repository. */
+	/** "owner/name" */
 	val repo: String,
 	val number: Int,
-	/** "merged", "open" or "closed". */
 	val state: String,
 	val url: String,
 	val updatedAt: String,
 )
 
-/* ─────────────────────────  GitHub API DTOs (deserialized from api.github.com)  ───────────────────────── */
+class Avatar(val bytes: ByteArray, val contentType: MediaType)
+
+// Deserialized from api.github.com
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class GhUser(
@@ -94,6 +84,3 @@ data class GhIssue(
 data class GhPullRequestRef(
 	@JsonProperty("merged_at") val mergedAt: String? = null,
 )
-
-/** The profile picture, mirrored so visitors' browsers never contact GitHub (served at GET /api/github/avatar). */
-class Avatar(val bytes: ByteArray, val contentType: MediaType)

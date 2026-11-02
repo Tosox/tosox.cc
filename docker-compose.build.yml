@@ -1,5 +1,3 @@
-# Overlay that builds the images from source instead of pulling them from GHCR.
-#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 services:
   api:
     build: ./api

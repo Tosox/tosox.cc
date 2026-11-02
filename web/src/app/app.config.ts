@@ -8,8 +8,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    // Scroll restoration is handled in App: the page scrolls inside a container, not the window, so
-    // the router's built-in withInMemoryScrolling (which targets the window) can't reach it.
+    // Scroll reset lives in App: the page scrolls in a container, which withInMemoryScrolling can't reach
     provideRouter(routes),
     provideHttpClient()
   ]

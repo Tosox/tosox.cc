@@ -1,28 +1,11 @@
 import { CatalogEntry } from './catalog';
 
-/**
- * The "Frameworks & SDKs" showcase at the top of My Work: larger, multi-repo projects that each live
- * in their own GitHub organization — a core library or SDK plus the modules built on top of it.
- *
- * This is the editorial layer, mirroring `data/catalog.ts`: the project's name, tagline and the
- * curated title/order of its member repos live here, while every live fact (description, language,
- * stars, forks, archived, URL) comes from `/api/github`, keyed by `org` + `repo` under `Snapshot.orgs`.
- *
- * `org` must match the GitHub organization login and `repo` the repository name exactly — a mismatch
- * skips the card and is reported by `GithubService.missingOrgRepos()` (logged in dev), so a rename on
- * GitHub surfaces as a warning rather than a silently vanishing card. `.github` and other
- * infrastructure repos are simply left out.
- */
+// Multi-repo projects on /projects, one per GitHub organization. Same idea as `catalog.ts`
 export interface FeaturedProject {
-  /** GitHub organization login — the join key to `Snapshot.orgs`. */
   org: string;
-  /** Display name (may differ from the org login, e.g. "CodeSpark" for the "CodeSparkApp" org). */
   name: string;
-  /** One-line editorial summary of the project as a whole. */
   tagline: string;
-  /** Link to the organization's GitHub page. */
   url: string;
-  /** Member repositories, in display order. The first is treated as the project's core/flagship. */
   repos: CatalogEntry[];
 }
 
@@ -66,8 +49,3 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
     ],
   },
 ];
-
-/** Every curated org/repo pair, for the missing-repo dev check. */
-export const FEATURED_REPOS: { org: string; repo: string }[] = FEATURED_PROJECTS.flatMap((p) =>
-  p.repos.map((r) => ({ org: p.org, repo: r.repo })),
-);
