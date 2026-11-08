@@ -3,7 +3,7 @@ import { IconName } from '../shared/icon';
 export const SITE_REPO_URL = 'https://github.com/Tosox/tosox.cc';
 
 export const NAV_TABS = [
-  { path: 'about', label: 'About' },
+  { path: '/', label: 'About' },
   { path: 'work', label: 'My Work' },
   { path: 'projects', label: 'My Projects' },
   { path: 'contributions', label: 'Contributions' },

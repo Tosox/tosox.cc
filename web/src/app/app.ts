@@ -10,10 +10,17 @@ import { Footer } from './shared/footer';
   imports: [RouterOutlet, RouterLink, RouterLinkActive, Footer],
   template: `
     <nav>
-      <a class="nav-logo" routerLink="/about">tosox<span>.cc</span></a>
+      <a class="nav-logo" routerLink="/">tosox<span>.cc</span></a>
       <div class="nav-tabs">
         @for (t of tabs; track t.path) {
-          <a class="nav-tab" [routerLink]="t.path" routerLinkActive="active">{{ t.label }}</a>
+          <!-- '/' prefix-matches every route, so About needs exact matching -->
+          <a
+            class="nav-tab"
+            [routerLink]="t.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: t.path === '/' }"
+            >{{ t.label }}</a
+          >
         }
       </div>
     </nav>

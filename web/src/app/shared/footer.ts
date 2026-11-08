@@ -11,7 +11,7 @@ import { NAV_TABS, SITE_REPO_URL, SOCIAL_LINKS } from '../data/content';
     <footer class="site-footer">
       <div class="footer-main">
         <div class="footer-brand">
-          <a class="nav-logo" routerLink="/about">tosox<span>.cc</span></a>
+          <a class="nav-logo" routerLink="/">tosox<span>.cc</span></a>
           <p class="footer-tagline">Game mods, dev tools and open source.</p>
           <p class="footer-note">
             This site is open source.

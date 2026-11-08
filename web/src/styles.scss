@@ -532,6 +532,15 @@ nav {
 .empty { color: var(--tx3); font-size: 14px; padding: 40px 0; text-align: center; font-family: var(--mono); }
 .empty a { color: var(--accent); text-decoration: none; }
 
+/* 404 */
+.notfound { text-align: center; padding-top: 90px; }
+.notfound-code {
+  font-family: var(--mono); font-size: 96px; font-weight: 500; line-height: 1;
+  color: var(--border2); letter-spacing: 4px; margin-bottom: 20px;
+}
+.notfound .section-desc { max-width: 46ch; margin-inline: auto; text-wrap: pretty; }
+.notfound-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
 /* Category tabs */
 .cat-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
 .cat-tab {
